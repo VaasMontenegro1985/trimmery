@@ -1,0 +1,195 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #ffe3dd;
+  font-family: 'League Spartan', Arial, Helvetica, sans-serif;
+}
+
+button {
+  cursor: pointer;
+  font-family: 'League Spartan', inherit;
+}
+
+.page {
+  width: min(1180px, calc(100vw - 32px));
+  min-height: 790px;
+  margin: 14px auto;
+  background: #ffe3dd;
+  padding: 34px 38px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #8f807c;
+  padding-bottom: 28px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoSvg {
+  width: 32px;
+  height: 32px;
+}
+
+.logoText {
+  font-family: 'League Spartan', sans-serif;
+  font-weight: 300;
+  font-size: 30px;
+  position: relative;
+  top: 3px;
+}
+
+.outlineButton {
+  min-width: 110px;
+  padding: 10px 24px;
+  border: 1px solid #7d625a;
+  background: #ffc0ae;
+  color: #4a403d;
+  font-size: 20px;
+  border-radius: 3px;
+}
+
+.main {
+  padding-top: 86px;
+}
+
+.description {
+  max-width: 760px;
+  margin: 0 auto 26px;
+  font-size: 20px;
+  line-height: 1;
+  color: #504746;
+}
+
+.shortenerCard {
+  width: 666px;
+  margin: 0 auto;
+  background: #ffbba7;
+  padding: 48px 32px 20px;
+  border-radius: 4px;
+}
+
+.urlInput {
+  color: #1c1c1c;
+  width: 100%;
+  height: 39px;
+  padding: 0 14px;
+  border: 1px solid #8f807c;
+  background: #ffe3dd;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.shortenButton {
+  width: 100%;
+  height: 40px;
+  margin-top: 34px;
+  border: none;
+  border-radius: 3px;
+  background: #4b413f;
+  color: #ffe3dd;
+  font-size: 15px;
+}
+
+.result {
+  margin-top: 24px;
+  font-size: 14px;
+}
+
+.result label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.resultRow {
+  display: flex;
+  gap: 24px;
+}
+
+.resultRow input {
+  flex: 1;
+  height: 39px;
+  padding: 0 18px;
+  border: 1px solid #8f807c;
+  background: #ffe3dd;
+  border-radius: 3px;
+  color: #1c1c1c;
+}
+
+.resultRow button,
+.qrText button {
+  border: 1px solid #8f807c;
+  background: #ffe3dd;
+  border-radius: 3px;
+  padding: 0 18px;
+  color: #1c1c1c;
+}
+
+.divider {
+  height: 1px;
+  background: #8f807c;
+  margin: 10px 0 8px;
+}
+
+.qrRow {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.qrImage {
+  width: 106px;
+  height: 106px;
+  background: white;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.qrText p {
+  margin: 0 0 12px;
+  color: #5d5552;
+}
+
+.qrText button {
+  height: 36px;
+}
+
+@media (max-width: 760px) {
+  .page {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    background: #ffe3dd;
+    padding: 34px 38px;
+  }
+
+  .main {
+    padding-top: 56px;
+  }
+
+  .description {
+    font-size: 17px;
+  }
+
+  .shortenerCard {
+    width: 100%;
+    padding: 32px 20px 20px;
+  }
+
+  .resultRow {
+    gap: 10px;
+  }
+
+  .qrRow {
+    align-items: flex-start;
+  }
+}
