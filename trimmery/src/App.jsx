@@ -1,23 +1,38 @@
 import { useState } from "react";
 import "./App.css";
 import QRCode from "qrcode";
+import { shortenUrl } from "./api/urlApi";
 
 function App() {
   const [url, setUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
   const [qrCode, setQrCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleShorten = async () => {
-    if (!url.trim()) return;
+    const inputValue = url.trim();
 
-    const code = Math.random().toString(36).substring(2, 8);
-    const short = `https://trimmery.ru/${code}`;
+    if (!inputValue || loading) return;
 
-    setShortUrl(short);
+    setLoading(true);
+    setError("");
 
-    // генерим QR в base64 PNG
-    const qr = await QRCode.toDataURL(short);
-    setQrCode(qr);
+    try {
+      const data = await shortenUrl(inputValue);
+
+      setShortUrl(data.short_url);
+
+      // генерим QR в base64 PNG
+      const qr = await QRCode.toDataURL(data.short_url);
+      setQrCode(qr);
+    } catch (err) {
+      setError(err.message);
+      setShortUrl("");
+      setQrCode("");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,9 +74,15 @@ function App() {
             placeholder="Вставьте ссылку, которую нужно сократить"
           />
 
-          <button className="shortenButton" onClick={handleShorten}>
-            Сократить
+          <button
+            className="shortenButton"
+            onClick={handleShorten}
+            disabled={loading}
+          >
+            {loading ? "Сокращаем..." : "Сократить"}
           </button>
+
+          {error && <div className="result">{error}</div>}
 
           {shortUrl && (
             <div className="result">
