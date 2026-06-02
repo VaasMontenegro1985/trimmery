@@ -8,6 +8,9 @@ function LinksTable({
   dashboardQr,
   dashboardQrLoadingCode,
   dashboardQrError,
+  dashboardStats,
+  dashboardStatsLoadingCode,
+  dashboardStatsError,
   editingCode,
   editOriginalUrl,
   editAlias,
@@ -15,6 +18,7 @@ function LinksTable({
   editError,
   deleteLoadingCode,
   onToggleQr,
+  onToggleStats,
   onStartEditing,
   onEditOriginalUrlChange,
   onEditAliasChange,
@@ -53,6 +57,9 @@ function LinksTable({
               dashboardQr={dashboardQr}
               dashboardQrLoadingCode={dashboardQrLoadingCode}
               dashboardQrError={dashboardQrError}
+              dashboardStats={dashboardStats}
+              dashboardStatsLoadingCode={dashboardStatsLoadingCode}
+              dashboardStatsError={dashboardStatsError}
               editingCode={editingCode}
               editOriginalUrl={editOriginalUrl}
               editAlias={editAlias}
@@ -60,6 +67,7 @@ function LinksTable({
               editError={editError}
               deleteLoadingCode={deleteLoadingCode}
               onToggleQr={onToggleQr}
+              onToggleStats={onToggleStats}
               onStartEditing={onStartEditing}
               onEditOriginalUrlChange={onEditOriginalUrlChange}
               onEditAliasChange={onEditAliasChange}

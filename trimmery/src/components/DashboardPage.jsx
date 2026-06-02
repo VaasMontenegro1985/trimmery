@@ -1,6 +1,7 @@
 import DashboardStats from "./DashboardStats";
 import LinksTable from "./LinksTable";
 import Logo from "./Logo";
+import TopLinks from "./TopLinks";
 
 function DashboardPage({
   links,
@@ -12,6 +13,9 @@ function DashboardPage({
   dashboardQr,
   dashboardQrLoadingCode,
   dashboardQrError,
+  dashboardStats,
+  dashboardStatsLoadingCode,
+  dashboardStatsError,
   editingCode,
   editOriginalUrl,
   editAlias,
@@ -20,6 +24,7 @@ function DashboardPage({
   deleteLoadingCode,
   onHome,
   onToggleQr,
+  onToggleStats,
   onStartEditing,
   onEditOriginalUrlChange,
   onEditAliasChange,
@@ -46,6 +51,8 @@ function DashboardPage({
           maxClicks={maxClicks}
         />
 
+        <TopLinks links={links} />
+
         <LinksTable
           links={links}
           loading={loading}
@@ -54,6 +61,9 @@ function DashboardPage({
           dashboardQr={dashboardQr}
           dashboardQrLoadingCode={dashboardQrLoadingCode}
           dashboardQrError={dashboardQrError}
+          dashboardStats={dashboardStats}
+          dashboardStatsLoadingCode={dashboardStatsLoadingCode}
+          dashboardStatsError={dashboardStatsError}
           editingCode={editingCode}
           editOriginalUrl={editOriginalUrl}
           editAlias={editAlias}
@@ -61,6 +71,7 @@ function DashboardPage({
           editError={editError}
           deleteLoadingCode={deleteLoadingCode}
           onToggleQr={onToggleQr}
+          onToggleStats={onToggleStats}
           onStartEditing={onStartEditing}
           onEditOriginalUrlChange={onEditOriginalUrlChange}
           onEditAliasChange={onEditAliasChange}

@@ -4,10 +4,12 @@ import QRCode from "qrcode";
 import {
   deleteLink,
   getLinkQrBlob,
+  getLinkStats,
   getUserLinks,
   isValidToken,
   loginUser,
   registerUser,
+  SESSION_EXPIRED_MESSAGE,
   shortenUrl,
   updateLink,
 } from "./api/urlApi";
@@ -40,6 +42,9 @@ function App() {
   const [dashboardQr, setDashboardQr] = useState(null);
   const [dashboardQrLoadingCode, setDashboardQrLoadingCode] = useState("");
   const [dashboardQrError, setDashboardQrError] = useState(null);
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [dashboardStatsLoadingCode, setDashboardStatsLoadingCode] = useState("");
+  const [dashboardStatsError, setDashboardStatsError] = useState(null);
   const [editingCode, setEditingCode] = useState("");
   const [editOriginalUrl, setEditOriginalUrl] = useState("");
   const [editAlias, setEditAlias] = useState("");
@@ -92,6 +97,9 @@ function App() {
     setEditingCode("");
     setEditError("");
     setDashboardMessage("");
+    setDashboardStats(null);
+    setDashboardStatsLoadingCode("");
+    setDashboardStatsError(null);
     replaceDashboardQr(null);
     replaceQrCode("");
     localStorage.removeItem("trimmery_token");
@@ -107,7 +115,7 @@ function App() {
 
   const hasActiveSession = () => {
     if (!isValidToken(token) || !user || isTokenExpired(expiresAt)) {
-      clearSession("Сессия истекла. Войдите заново.");
+      clearSession(SESSION_EXPIRED_MESSAGE);
       return false;
     }
 
@@ -166,7 +174,7 @@ function App() {
         isValidToken(token) && !isTokenExpired(expiresAt) ? token : null;
 
       if (isValidToken(token) && !activeToken) {
-        clearSession("Сессия истекла. Войдите заново.");
+        clearSession(SESSION_EXPIRED_MESSAGE);
         return;
       }
 
@@ -182,7 +190,7 @@ function App() {
           const qrBlob = await getLinkQrBlob(data.code, activeToken, 256);
           replaceQrCode(URL.createObjectURL(qrBlob));
         } catch (err) {
-          if (err.message === "Сессия истекла. Войдите заново.") {
+          if (err.message === SESSION_EXPIRED_MESSAGE) {
             clearSession(err.message);
           }
 
@@ -195,6 +203,13 @@ function App() {
         replaceQrCode(qr);
       }
     } catch (err) {
+      if (err.message === SESSION_EXPIRED_MESSAGE) {
+        clearSession(err.message);
+        setAuthMode("login");
+        setScreen("auth");
+        return;
+      }
+
       setError(err.message);
       setShortUrl("");
       replaceQrCode("");
@@ -222,7 +237,7 @@ function App() {
       const data = await getUserLinks(currentToken);
       setDashboardLinks(data.links || []);
     } catch (err) {
-      if (err.message === "Сессия истекла. Войдите заново.") {
+      if (err.message === SESSION_EXPIRED_MESSAGE) {
         clearSession(err.message);
         setAuthMode("login");
         setScreen("auth");
@@ -245,6 +260,8 @@ function App() {
 
     replaceDashboardQr(null);
     setDashboardQrError(null);
+    setDashboardStats(null);
+    setDashboardStatsError(null);
     setDashboardMessage("");
     setScreen("dashboard");
     await loadDashboardLinks(token);
@@ -317,7 +334,7 @@ function App() {
         dataUrl: URL.createObjectURL(qrBlob),
       });
     } catch (err) {
-      if (err.message === "Сессия истекла. Войдите заново.") {
+      if (err.message === SESSION_EXPIRED_MESSAGE) {
         clearSession(err.message);
         setAuthMode("login");
         setScreen("auth");
@@ -333,12 +350,51 @@ function App() {
     }
   };
 
+  const toggleDashboardStats = async (link) => {
+    if (!hasActiveSession()) {
+      setAuthMode("login");
+      setScreen("auth");
+      return;
+    }
+
+    if (dashboardStats?.code === link.code) {
+      setDashboardStats(null);
+      setDashboardStatsError(null);
+      return;
+    }
+
+    setDashboardStats(null);
+    setDashboardStatsError(null);
+    setDashboardStatsLoadingCode(link.code);
+
+    try {
+      const stats = await getLinkStats(link.code, token, 10);
+      setDashboardStats(stats);
+    } catch (err) {
+      if (err.message === SESSION_EXPIRED_MESSAGE) {
+        clearSession(err.message);
+        setAuthMode("login");
+        setScreen("auth");
+        return;
+      }
+
+      setDashboardStatsError({
+        code: link.code,
+        message: err.message,
+      });
+    } finally {
+      setDashboardStatsLoadingCode("");
+    }
+  };
+
   const startEditing = (link) => {
     setEditingCode(link.code);
     setEditOriginalUrl(link.original_url);
     setEditAlias(link.code);
     setEditError("");
     setDashboardMessage("");
+    setDashboardStats(null);
+    setDashboardStatsError(null);
   };
 
   const cancelEditing = () => {
@@ -383,7 +439,7 @@ function App() {
       await loadDashboardLinks(token);
       setDashboardMessage("Ссылка обновлена");
     } catch (err) {
-      if (err.message === "Сессия истекла. Войдите заново.") {
+      if (err.message === SESSION_EXPIRED_MESSAGE) {
         clearSession(err.message);
         setAuthMode("login");
         setScreen("auth");
@@ -418,6 +474,19 @@ function App() {
         replaceDashboardQr(null);
       }
 
+      if (dashboardStats?.code === link.code) {
+        setDashboardStats(null);
+        setDashboardStatsError(null);
+      }
+
+      if (dashboardStatsError?.code === link.code) {
+        setDashboardStatsError(null);
+      }
+
+      if (dashboardStatsLoadingCode === link.code) {
+        setDashboardStatsLoadingCode("");
+      }
+
       if (editingCode === link.code) {
         cancelEditing();
       }
@@ -425,7 +494,7 @@ function App() {
       await loadDashboardLinks(token);
       setDashboardMessage("Ссылка удалена");
     } catch (err) {
-      if (err.message === "Сессия истекла. Войдите заново.") {
+      if (err.message === SESSION_EXPIRED_MESSAGE) {
         clearSession(err.message);
         setAuthMode("login");
         setScreen("auth");
@@ -458,6 +527,9 @@ function App() {
         dashboardQr={dashboardQr}
         dashboardQrLoadingCode={dashboardQrLoadingCode}
         dashboardQrError={dashboardQrError}
+        dashboardStats={dashboardStats}
+        dashboardStatsLoadingCode={dashboardStatsLoadingCode}
+        dashboardStatsError={dashboardStatsError}
         editingCode={editingCode}
         editOriginalUrl={editOriginalUrl}
         editAlias={editAlias}
@@ -466,6 +538,7 @@ function App() {
         deleteLoadingCode={deleteLoadingCode}
         onHome={openHome}
         onToggleQr={toggleDashboardQr}
+        onToggleStats={toggleDashboardStats}
         onStartEditing={startEditing}
         onEditOriginalUrlChange={setEditOriginalUrl}
         onEditAliasChange={setEditAlias}

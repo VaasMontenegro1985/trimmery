@@ -28,7 +28,7 @@ function ShortenerCard({
         </label>
 
         <label className="field">
-          <span>Alias, необязательно</span>
+          <span>Алиас (необязательно)</span>
           <input
             className="urlInput"
             value={customCode}

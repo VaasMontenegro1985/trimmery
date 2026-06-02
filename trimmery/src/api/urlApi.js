@@ -1,16 +1,28 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
-async function parseResponse(response) {
+export const SESSION_EXPIRED_MESSAGE = "Сессия истекла. Войдите заново.";
+
+async function parseResponse(response, options = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
     if (response.status === 401) {
-      throw new Error("Сессия истекла. Войдите заново.");
+      if (options.sessionProtected) {
+        throw new Error(SESSION_EXPIRED_MESSAGE);
+      }
+
+      if (options.authEndpoint) {
+        throw new Error(
+          data?.error?.message ||
+            options.authFallbackMessage ||
+            `Запрос завершился ошибкой ${response.status}`,
+        );
+      }
     }
 
     throw new Error(
-      data?.error?.message || `Request failed with status ${response.status}`,
+      data?.error?.message || `Запрос завершился ошибкой ${response.status}`,
     );
   }
 
@@ -26,12 +38,13 @@ export async function shortenUrl(url, customCode = "", token = null) {
   const headers = {
     "Content-Type": "application/json",
   };
+  const hasAuthorization = isValidToken(token);
 
   if (customCode.trim()) {
     body.custom_code = customCode.trim();
   }
 
-  if (isValidToken(token)) {
+  if (hasAuthorization) {
     headers.Authorization = `Bearer ${token}`;
   }
 
@@ -41,7 +54,7 @@ export async function shortenUrl(url, customCode = "", token = null) {
     body: JSON.stringify(body),
   });
 
-  return parseResponse(response);
+  return parseResponse(response, { sessionProtected: hasAuthorization });
 }
 
 export async function registerUser(email, password) {
@@ -53,7 +66,7 @@ export async function registerUser(email, password) {
     body: JSON.stringify({ email, password }),
   });
 
-  return parseResponse(response);
+  return parseResponse(response, { authEndpoint: true });
 }
 
 export async function loginUser(email, password) {
@@ -65,7 +78,10 @@ export async function loginUser(email, password) {
     body: JSON.stringify({ email, password }),
   });
 
-  return parseResponse(response);
+  return parseResponse(response, {
+    authEndpoint: true,
+    authFallbackMessage: "Неверная почта или пароль",
+  });
 }
 
 export async function getUserLinks(token) {
@@ -76,7 +92,7 @@ export async function getUserLinks(token) {
     },
   });
 
-  return parseResponse(response);
+  return parseResponse(response, { sessionProtected: true });
 }
 
 export async function getLinkQrBlob(code, token, size = 256) {
@@ -88,18 +104,21 @@ export async function getLinkQrBlob(code, token, size = 256) {
   });
 
   if (!response.ok) {
-    if (response.status === 401) {
-      throw new Error("Сессия истекла. Войдите заново.");
-    }
-
-    const data = await response.json().catch(() => null);
-
-    throw new Error(
-      data?.error?.message || `Request failed with status ${response.status}`,
-    );
+    await parseResponse(response, { sessionProtected: true });
   }
 
   return response.blob();
+}
+
+export async function getLinkStats(code, token, limit = 10) {
+  const response = await fetch(`${API_BASE_URL}/api/links/${code}/stats?limit=${limit}`, {
+    method: "GET",
+    headers: {
+      ...(isValidToken(token) ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  return parseResponse(response, { sessionProtected: true });
 }
 
 export async function updateLink(code, payload, token) {
@@ -112,7 +131,7 @@ export async function updateLink(code, payload, token) {
     body: JSON.stringify(payload),
   });
 
-  return parseResponse(response);
+  return parseResponse(response, { sessionProtected: true });
 }
 
 export async function deleteLink(code, token) {
@@ -127,13 +146,9 @@ export async function deleteLink(code, token) {
     return true;
   }
 
-  if (response.status === 401) {
-    throw new Error("Сессия истекла. Войдите заново.");
+  if (!response.ok) {
+    await parseResponse(response, { sessionProtected: true });
   }
 
-  const data = await response.json().catch(() => null);
-
-  throw new Error(
-    data?.error?.message || `Request failed with status ${response.status}`,
-  );
+  return true;
 }

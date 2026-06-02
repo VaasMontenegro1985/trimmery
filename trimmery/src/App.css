@@ -252,6 +252,8 @@ button:disabled {
   background: #ffe3dd;
   border-radius: 3px;
   color: #1c1c1c;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .resultRow button,
@@ -262,6 +264,8 @@ button:disabled {
   padding: 0 18px;
   color: #1c1c1c;
   font-size: 14px;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .divider {
@@ -367,6 +371,84 @@ button:disabled {
   line-height: 1;
 }
 
+.topLinks {
+  margin-bottom: 24px;
+  padding: 18px;
+  border: 1px solid rgba(143, 128, 124, 0.75);
+  background: #ffbba7;
+  border-radius: 8px;
+  box-shadow: 0 14px 30px rgba(74, 64, 61, 0.1);
+}
+
+.topLinksHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.topLinks h2 {
+  margin: 0;
+  color: #251f1d;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.topLinksEmpty {
+  margin: 0;
+  color: #5d5552;
+  font-size: 15px;
+}
+
+.topLinksList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.topLinkItem {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(143, 128, 124, 0.62);
+  background: #ffe3dd;
+  border-radius: 6px;
+  color: #251f1d;
+  text-decoration: none;
+}
+
+.topLinkItem:hover {
+  text-decoration: underline;
+}
+
+.topLinkRank {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #4b413f;
+  color: #ffe3dd;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.topLinkUrl {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topLinkItem strong {
+  color: #251f1d;
+  font-size: 18px;
+}
+
 .linksPanel {
   border: 1px solid rgba(143, 128, 124, 0.75);
   background: #ffbba7;
@@ -400,9 +482,9 @@ button:disabled {
 
 .linksTableHead,
 .linksTableRow {
-  min-width: 900px;
+  min-width: 980px;
   display: grid;
-  grid-template-columns: 1.05fr 1.45fr 70px 110px 250px;
+  grid-template-columns: 1.05fr 1.45fr 70px 110px 330px;
   align-items: center;
   gap: 16px;
 }
@@ -416,7 +498,7 @@ button:disabled {
 }
 
 .linkEntry {
-  min-width: 900px;
+  min-width: 980px;
   border-bottom: 1px solid rgba(143, 128, 124, 0.55);
 }
 
@@ -434,6 +516,7 @@ button:disabled {
   color: #251f1d;
   text-decoration: none;
   overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .linksTableRow a:hover {
@@ -445,6 +528,10 @@ button:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  overflow-wrap: anywhere;
+}
+
+.shortUrl {
   overflow-wrap: anywhere;
 }
 
@@ -515,6 +602,83 @@ button:disabled {
   background: #ffe3dd;
   border-radius: 6px;
   min-width: 0;
+}
+
+.linkStatsBox {
+  margin: 0 14px 16px;
+  padding: 14px;
+  border: 1px solid rgba(143, 128, 124, 0.55);
+  background: #ffe3dd;
+  border-radius: 6px;
+  min-width: 0;
+}
+
+.linkStatsStatus,
+.linkStatsError,
+.linkStatsEmpty {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.linkStatsStatus,
+.linkStatsEmpty {
+  color: #5d5552;
+}
+
+.linkStatsError {
+  color: #7d241a;
+}
+
+.linkStatsSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  color: #4a403d;
+  font-size: 15px;
+}
+
+.linkStatsSummary strong {
+  color: #251f1d;
+  font-size: 24px;
+}
+
+.visitsList {
+  display: grid;
+  gap: 10px;
+}
+
+.visitItem {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid rgba(143, 128, 124, 0.42);
+  background: rgba(255, 187, 167, 0.36);
+  border-radius: 6px;
+  min-width: 0;
+}
+
+.visitMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #4a403d;
+  font-size: 14px;
+}
+
+.visitMeta span {
+  overflow-wrap: anywhere;
+}
+
+.visitItem p {
+  margin: 0;
+  color: #5d5552;
+  font-size: 13px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .authPage {
@@ -655,6 +819,10 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .topLinksList {
+    grid-template-columns: 1fr;
+  }
+
   .statCard {
     min-height: 112px;
   }
@@ -727,10 +895,12 @@ button:disabled {
   .rowActions {
     justify-content: flex-start;
     margin-top: 4px;
+    min-width: 0;
   }
 
   .editRow,
-  .dashboardQrBox {
+  .dashboardQrBox,
+  .linkStatsBox {
     margin: 0 16px 16px;
     background: #ffe3dd;
   }
@@ -814,12 +984,19 @@ button:disabled {
 
   .resultRow {
     flex-direction: column;
+    gap: 10px;
+  }
+
+  .resultRow input {
+    width: 100%;
+    height: 50px;
+    font-size: 15px;
   }
 
   .resultRow button,
   .qrText button {
     width: 100%;
-    min-height: 40px;
+    min-height: 50px;
   }
 
   .qrRow {
@@ -851,6 +1028,7 @@ button:disabled {
     width: 100%;
     min-height: 38px;
     padding: 0 10px;
+    white-space: normal;
   }
 
   .editRow {
@@ -871,6 +1049,12 @@ button:disabled {
     flex-direction: column;
     align-items: flex-start;
     margin: 0 12px 16px;
+  }
+
+  .visitMeta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .authPage {
@@ -947,9 +1131,15 @@ button:disabled {
   }
 
   .resultRow input {
-    height: 40px;
-    padding: 0 12px;
-    font-size: 14px;
+    min-height: 50px;
+    height: auto;
+    padding: 12px 14px;
+    line-height: 1.25;
+    font-size: 15px;
+  }
+
+  .resultRow button {
+    min-height: 50px;
   }
 
   .qrImage {
@@ -1005,6 +1195,20 @@ button:disabled {
     padding: 10px;
   }
 
+  .topLinks {
+    margin-bottom: 18px;
+    padding: 14px;
+  }
+
+  .topLinkItem {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .topLinkItem strong {
+    grid-column: 2;
+    font-size: 16px;
+  }
+
   .linksTable {
     gap: 12px;
   }
@@ -1019,7 +1223,8 @@ button:disabled {
   }
 
   .editRow,
-  .dashboardQrBox {
+  .dashboardQrBox,
+  .linkStatsBox {
     margin: 0 12px 12px;
     padding: 12px;
   }

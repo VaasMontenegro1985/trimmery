@@ -1,4 +1,24 @@
+import { useEffect, useState } from "react";
+import { copyToClipboard } from "../utils/copyToClipboard";
+
 function ResultBlock({ shortUrl, hasToken, qrCode, qrLoading, qrError }) {
+  const [copyStatus, setCopyStatus] = useState("idle");
+
+  useEffect(() => {
+    if (copyStatus === "idle") return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setCopyStatus("idle");
+    }, 1800);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [copyStatus]);
+
+  const handleCopy = async () => {
+    const copied = await copyToClipboard(shortUrl);
+    setCopyStatus(copied ? "success" : "fail");
+  };
+
   if (!shortUrl) return null;
 
   return (
@@ -7,11 +27,12 @@ function ResultBlock({ shortUrl, hasToken, qrCode, qrLoading, qrError }) {
 
       <div className="resultRow">
         <input value={shortUrl} readOnly />
-        <button
-          onClick={() => navigator.clipboard.writeText(shortUrl)}
-          type="button"
-        >
-          Копировать
+        <button onClick={handleCopy} type="button">
+          {copyStatus === "success"
+            ? "Скопировано"
+            : copyStatus === "fail"
+              ? "Не скопировано"
+              : "Копировать"}
         </button>
       </div>
 
@@ -26,7 +47,7 @@ function ResultBlock({ shortUrl, hasToken, qrCode, qrLoading, qrError }) {
 
       {qrCode && (
         <div className="qrRow">
-          <img src={qrCode} alt="QR Code" className="qrImage" />
+          <img src={qrCode} alt="QR-код" className="qrImage" />
 
           <div className="qrText">
             <p>Сканируй QR-код, чтобы открыть ссылку</p>
